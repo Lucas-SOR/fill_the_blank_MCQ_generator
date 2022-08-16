@@ -1,0 +1,12 @@
+SELECT DISTINCT ?country ?country_name ?country_abstract
+    WHERE {
+      ?country a yago:WikicatCountries , dbo:Country.
+      ?country rdfs:label ?country_name.
+      ?country dbo:abstract ?country_abstract.
+
+      FILTER(lang(?country_name) = 'en')
+      FILTER(lang(?country_abstract) = 'en')
+
+    } 
+    
+    ORDER BY ?country
