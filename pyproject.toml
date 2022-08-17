@@ -12,6 +12,7 @@ mypy = "^0.971"
 SPARQLWrapper = "^2.0.0"
 pandas = "^1.4.3"
 sense2vec = "^2.0.0"
+yake = "^0.4.8"
 
 [tool.poetry.dev-dependencies]
 
