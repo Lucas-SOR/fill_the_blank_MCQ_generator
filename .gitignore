@@ -130,3 +130,5 @@ dmypy.json
 
 # s2v models
 s2v_models
+
+.DS_Store
