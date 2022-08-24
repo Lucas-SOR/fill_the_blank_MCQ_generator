@@ -1,5 +1,5 @@
 import random
-import yake
+import spacy
 
 from spacy.lang.en import English
 from sense2vec import Sense2Vec
@@ -9,7 +9,7 @@ from typing import List
 class Generator:
     def __init__(self, path_to_model: str) -> None:
         self.s2v_model = Sense2Vec().from_disk(path_to_model)
-        self.keyword_extractor = yake.KeywordExtractor()
+        self.ner_model = spacy.load("en_core_web_sm")
         self.sentencizer = English()
         self.sentencizer.add_pipe("sentencizer")
 
@@ -52,14 +52,13 @@ class Generator:
         else:
             return []
 
-    def get_keywords(self, text: str) -> List[str]:
-        return [
-            keyword[0] for keyword in self.keyword_extractor.extract_keywords(text)
-        ][::-1]
+    def get_person_or_gpe(self, text: str) -> List[str]:
+        doc = self.ner_model(text)
+        return [ent.text for ent in doc.ents if ent.label_ in ["GPE", "PERSON"]]
 
     def generate_mcq(self, text: str):
         sentence_list = [sent.text.strip() for sent in self.sentencizer(text).sents]
-        keyword_list = self.get_keywords(text)
+        keyword_list = self.get_person_or_gpe(text)
         sentence_to_keyword_mapping = {
             sentence: [keyword for keyword in keyword_list if keyword in sentence]
             for sentence in sentence_list
@@ -82,5 +81,5 @@ class Generator:
 
 if __name__ == "__main__":
     g = Generator("s2v_models/s2v_old")
-    text = "A banana is an elongated, edible fruit botanically a berry produced by several kinds of large herbaceous flowering plants in the genus Musa. In some countries, bananas used for cooking may be called plantains, distinguishing them from dessert bananas."
+    text = 'Michael Joseph Jackson (August 29, 1958 - June 25, 2009) was an American singer, songwriter, dancer, and philanthropist. Dubbed the "King of Pop", he is regarded as one of the most significant cultural figures of the 20th century. Over a four-decade career, his contributions to music, dance, and fashion, along with his publicized personal life, made him a global figure in popular culture. Jackson influenced artists across many music genres; through stage and video performances, he popularized complicated dance moves such as the moonwalk, to which he gave the name, as well as the robot. He is the most awarded individual music artist in history.'
     print(g.generate_mcq(text))
