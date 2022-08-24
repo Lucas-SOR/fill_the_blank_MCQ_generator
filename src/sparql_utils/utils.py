@@ -1,7 +1,8 @@
+"""Module providing sparql utils"""
 import pandas as pd
-from SPARQLWrapper import JSON, XML, SPARQLWrapper
+from SPARQLWrapper import JSON, SPARQLWrapper
 
-from sparql_utils.constants import DBPEDIA_URL
+from src.sparql_utils.constants import DBPEDIA_URL
 
 
 def sparql_to_df(results):
@@ -13,15 +14,15 @@ def sparql_to_df(results):
         - data : The DataFrame
     """
     columns = results["head"]["vars"]
-    d = {}
+    sparql_dict = {}
     for col_name in columns:
-        d[col_name] = []
+        sparql_dict[col_name] = []
 
     for result in results["results"]["bindings"]:
         for col_name in columns:
-            d[col_name].append(result[col_name]["value"])
+            sparql_dict[col_name].append(result[col_name]["value"])
 
-    return pd.DataFrame(d)
+    return pd.DataFrame(sparql_dict)
 
 
 def query_sparql(path_to_query: str):
@@ -32,8 +33,8 @@ def query_sparql(path_to_query: str):
     """
     sparql = SPARQLWrapper(DBPEDIA_URL)
 
-    with open(path_to_query) as f:
-        query = f.read()
+    with open(path_to_query, encoding="utf-8") as file:
+        query = file.read()
         sparql.setQuery(query)
     sparql.setReturnFormat(JSON)
     results = sparql.query().convert()
