@@ -1,6 +1,7 @@
-from sparql_utils.constants import DBPEDIA_URL
-from SPARQLWrapper import SPARQLWrapper, JSON, XML
 import pandas as pd
+from SPARQLWrapper import JSON, XML, SPARQLWrapper
+
+from sparql_utils.constants import DBPEDIA_URL
 
 
 def sparql_to_df(results):

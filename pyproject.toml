@@ -13,6 +13,7 @@ SPARQLWrapper = "^2.0.0"
 pandas = "^1.4.3"
 sense2vec = "^2.0.0"
 spacy = "^3.4.1"
+streamlit = "^1.12.0"
 
 [tool.poetry.dev-dependencies]
 
