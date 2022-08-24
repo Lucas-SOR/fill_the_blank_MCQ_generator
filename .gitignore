@@ -132,3 +132,4 @@ dmypy.json
 s2v_models
 
 .DS_Store
+.vscode
