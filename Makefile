@@ -8,4 +8,4 @@ lint:
 	poetry run pylint src
 
 isort:
-	poetry run isort 
+	poetry run isort src
