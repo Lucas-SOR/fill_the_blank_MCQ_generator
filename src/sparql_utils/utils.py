@@ -1,11 +1,13 @@
 """Module providing sparql utils"""
+from typing import Dict
+
 import pandas as pd
 from SPARQLWrapper import JSON, SPARQLWrapper
 
 from src.sparql_utils.constants import DBPEDIA_URL
 
 
-def sparql_to_df(results):
+def sparql_to_df(results: Dict) -> pd.DataFrame:
     """
     This function transform a SPARQL result into a DataFrame
     Args:
@@ -25,7 +27,7 @@ def sparql_to_df(results):
     return pd.DataFrame(sparql_dict)
 
 
-def query_sparql(path_to_query: str):
+def query_sparql(path_to_query: str) -> pd.DataFrame:
     """
     This function makes the SPARQL request to DBpedia to get the desired information
     Returns :
