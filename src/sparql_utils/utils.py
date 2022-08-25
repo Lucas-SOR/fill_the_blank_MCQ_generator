@@ -1,5 +1,5 @@
 """Module providing sparql utils"""
-from typing import Dict
+from typing import Any, Dict
 
 import pandas as pd
 from SPARQLWrapper import JSON, SPARQLWrapper
@@ -15,16 +15,14 @@ def sparql_to_df(results: Dict) -> pd.DataFrame:
     Return:
         - data : The DataFrame
     """
-    columns = results["head"]["vars"]
-    sparql_dict = {}
-    for col_name in columns:
-        sparql_dict[col_name] = []
-
-    for result in results["results"]["bindings"]:
-        for col_name in columns:
-            sparql_dict[col_name].append(result[col_name]["value"])
-
-    return pd.DataFrame(sparql_dict)
+    return pd.DataFrame(
+        {
+            col_name: [
+                result[col_name]["value"] for result in results["results"]["bindings"]
+            ]
+            for col_name in results["head"]["vars"]
+        }
+    )
 
 
 def query_sparql(path_to_query: str) -> pd.DataFrame:
@@ -41,5 +39,5 @@ def query_sparql(path_to_query: str) -> pd.DataFrame:
     sparql.setReturnFormat(JSON)
     results = sparql.query().convert()
 
-    data = sparql_to_df(results)
+    data = sparql_to_df(results)  # type: ignore
     return data

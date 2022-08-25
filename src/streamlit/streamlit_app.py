@@ -1,12 +1,12 @@
 """Streamlit Module"""
 import random
+from typing import Dict, List
 
 import pandas as pd
 
 import streamlit as st
 from src.generator.generator import Generator
 from src.sparql_utils.utils import query_sparql
-from typing import Dict, List
 
 PATH_TO_MODEL = "s2v_models/s2v_old"
 PATH_TO_QUERY = "queries/countries_query.txt"
