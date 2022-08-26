@@ -94,6 +94,13 @@ def show_answer() -> None:
     st.session_state.show_answer = True
 
 
+def hide_answer() -> None:
+    """
+    Set the show_answer session state to False
+    """
+    st.session_state.show_answer = False
+
+
 country_dataframe = load_data_from_sparql_query(PATH_TO_QUERY)
 
 
@@ -134,7 +141,7 @@ if st.session_state.display:
         c1.write(str(2 * i) + ". " + st.session_state.proposals[2 * i])
         c2.write(str(2 * i + 1) + ". " + st.session_state.proposals[2 * i + 1])
     st.session_state.user_input = st.number_input(
-        "Answer (index of solution)", min_value=0, max_value=3
+        "Answer (index of solution)", min_value=0, max_value=3, on_change=hide_answer
     )
     st.button("Validate answer", on_click=show_answer)
     if st.session_state.show_answer:
