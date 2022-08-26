@@ -1,5 +1,5 @@
 """Module providing the Generator class allowing to generate MCQ question using NLP"""
-from random import sample
+from random import sample, choice
 from typing import Dict, List
 
 import spacy
@@ -122,3 +122,29 @@ class Generator:
                     )
 
         return mcq_list
+
+    def generate_single_mcq(self, text: str):
+        """Generates (in a random manner) a single mcq
+
+        Args:
+            text (str): a string
+
+        Returns:
+            Dict: a mcq
+        """
+        sentence_list = [sent.text.strip() for sent in self.sentencizer(text).sents]
+        while len(sentence_list) > 0:
+            sentence = choice(sentence_list)
+            keyword_list = self.get_person_or_gpe(sentence)
+            if len(keyword_list) != 0:
+                keyword = choice(keyword_list)
+                distractors = self.get_distractors(keyword, 10)
+                if len(distractors) != 0:
+                    return {
+                        "sentence": sentence.replace(keyword, "<blank>"),
+                        "answer": keyword,
+                        "distractors": distractors,
+                    }
+                else:
+                    sentence_list.remove(sentence)
+        return {}

@@ -25,6 +25,22 @@ def load_data_from_sparql_query(path_to_query: str) -> pd.DataFrame:
     return query_sparql(path_to_query)
 
 
+def check_relevance_mcq(mcq: Dict, country: str) -> bool:
+    """Return a bool assessing the relevance of the mcq
+
+    Args:
+        mcq (Dict): the mcq
+        country (str): a string containing the country
+
+    Returns:
+        bool: True if the mcq is relevant, False else
+    """
+    if mcq:
+        return mcq["answer"].lower() != country.lower()
+    else:
+        return False
+
+
 def get_relevant_mcq(mcq_list: List, country: str) -> Dict:
     """
     Return an mcq which answer is not the country
@@ -36,7 +52,7 @@ def get_relevant_mcq(mcq_list: List, country: str) -> Dict:
         Dict: the mcq whish answer is not country
     """
     mcq_addapted_to_country = [
-        mcq for mcq in mcq_list if mcq["answer"].lower() != country.lower()
+        mcq for mcq in mcq_list if check_relevance_mcq(mcq, country)
     ]
     return random.choice(mcq_addapted_to_country)
 
@@ -48,15 +64,21 @@ def display_question() -> None:
     st.session_state.current_country = random.choice(
         list(country_dataframe.country_name)
     )
-    st.session_state.mcq_list = st.session_state.mcq_generator.generate_mcq(
-        country_dataframe[
-            country_dataframe["country_name"] == st.session_state.current_country
-        ]["country_abstract"].iloc[0]
+    current_country_abstract = country_dataframe[
+        country_dataframe["country_name"] == st.session_state.current_country
+    ]["country_abstract"].iloc[0]
+    st.session_state.mcq = st.session_state.mcq_generator.generate_single_mcq(
+        current_country_abstract,
     )
-    mcq = get_relevant_mcq(st.session_state.mcq_list, st.session_state.current_country)
-    st.session_state.sentence = mcq["sentence"]
-    st.session_state.answer = mcq["answer"]
-    st.session_state.distractors = mcq["distractors"]
+    while not (
+        check_relevance_mcq(st.session_state.mcq, st.session_state.current_country)
+    ):
+        st.session_state.mcq = st.session_state.mcq_generator.generate_single_mcq(
+            current_country_abstract,
+        )
+    st.session_state.sentence = st.session_state.mcq["sentence"]
+    st.session_state.answer = st.session_state.mcq["answer"]
+    st.session_state.distractors = st.session_state.mcq["distractors"]
     st.session_state.proposals = st.session_state.distractors + [
         st.session_state.answer
     ]
@@ -96,8 +118,8 @@ if "proposals" not in st.session_state:
 if "current_country" not in st.session_state:
     st.session_state.current_country = ""
 
-if "mcq_list" not in st.session_state:
-    st.session_state.mcq_list = []
+if "mcq" not in st.session_state:
+    st.session_state.mcq = {}
 
 if "mcq_generator" not in st.session_state:
     st.session_state.mcq_generator = Generator(path_to_model=PATH_TO_MODEL)
