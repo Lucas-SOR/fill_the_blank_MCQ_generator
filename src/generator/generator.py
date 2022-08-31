@@ -145,6 +145,5 @@ class Generator:
                         "answer": keyword,
                         "distractors": distractors,
                     }
-                else:
-                    sentence_list.remove(sentence)
+                sentence_list.remove(sentence)
         return {}

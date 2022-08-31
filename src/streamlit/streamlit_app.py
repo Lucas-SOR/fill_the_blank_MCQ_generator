@@ -8,8 +8,11 @@ import streamlit as st
 from src.generator.generator import Generator
 from src.sparql_utils.utils import query_sparql
 
+SICARA_ARTICLE_LINK = "https://www.sicara.fr/blog-technique"
+SICARA_LOGO_LINK = "https://www.actuia.com/wp-content/uploads/2018/02/logo_sicara.png"
 PATH_TO_MODEL = "s2v_models/s2v_old"
 PATH_TO_QUERY = "queries/countries_query.txt"
+TITLE = "Fundamentals of NLP with multi choice question generation"
 
 
 @st.cache()
@@ -37,8 +40,7 @@ def check_relevance_mcq(mcq: Dict, country: str) -> bool:
     """
     if mcq:
         return mcq["answer"].lower() != country.lower()
-    else:
-        return False
+    return False
 
 
 def get_relevant_mcq(mcq_list: List, country: str) -> Dict:
@@ -94,6 +96,16 @@ def show_answer() -> None:
     st.session_state.show_answer = True
 
 
+def validate_solution(answer_index: int):
+    """
+    Set the user_input value to answer index and show answer
+    Args:
+        answer_index (int): the index of the chosen solution
+    """
+    st.session_state.user_input = answer_index
+    show_answer()
+
+
 def hide_answer() -> None:
     """
     Set the show_answer session state to False
@@ -131,19 +143,39 @@ if "mcq" not in st.session_state:
 if "mcq_generator" not in st.session_state:
     st.session_state.mcq_generator = Generator(path_to_model=PATH_TO_MODEL)
 
+with st.sidebar:
+    st.image(SICARA_LOGO_LINK)
+    st.title(f"[{TITLE}]({SICARA_ARTICLE_LINK})")
+    st.write("How to use this app:")
+    st.write('- to generate a MCQ click on the "Generate country MCQ" button.')
+    st.write(
+        "- an MCQ will be displayed with 4 answers, click on one to see if it was the right one!"
+    )
+    st.write("- you can generate another MCQ by clicking on the button again.")
+
 st.button("Generate country MCQ", on_click=display_question)
 
 if st.session_state.display:
-    st.write(f"Current country is {st.session_state.current_country}")
+    st.write(f"Current country is {st.session_state.current_country}.")
     st.write(f"Fill the sentence : {st.session_state.sentence}")
     c1, c2 = st.columns(2)
-    for i in range(2):
-        c1.write(str(2 * i) + ". " + st.session_state.proposals[2 * i])
-        c2.write(str(2 * i + 1) + ". " + st.session_state.proposals[2 * i + 1])
-    st.session_state.user_input = st.number_input(
-        "Answer (index of solution)", min_value=0, max_value=3, on_change=hide_answer
+    c1.button(
+        str(0) + ". " + st.session_state.proposals[0],
+        on_click=lambda: validate_solution(0),
     )
-    st.button("Validate answer", on_click=show_answer)
+    c1.button(
+        str(2) + ". " + st.session_state.proposals[2],
+        on_click=lambda: validate_solution(2),
+    )
+    c2.button(
+        str(1) + ". " + st.session_state.proposals[1],
+        on_click=lambda: validate_solution(1),
+    )
+    c2.button(
+        str(3) + ". " + st.session_state.proposals[3],
+        on_click=lambda: validate_solution(3),
+    )
+
     if st.session_state.show_answer:
         is_answer_true = (
             st.session_state.proposals[int(st.session_state.user_input)]

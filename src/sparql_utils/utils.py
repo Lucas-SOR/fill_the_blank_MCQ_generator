@@ -1,5 +1,5 @@
 """Module providing sparql utils"""
-from typing import Any, Dict
+from typing import Dict
 
 import pandas as pd
 from SPARQLWrapper import JSON, SPARQLWrapper
