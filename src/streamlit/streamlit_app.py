@@ -39,7 +39,12 @@ def check_relevance_mcq(mcq: Dict, country: str) -> bool:
         bool: True if the mcq is relevant, False else
     """
     if mcq:
-        return mcq["answer"].lower() != country.lower()
+        relevance_answer = mcq["answer"].lower() not in country.lower()
+        relevance_distractors = all(
+            distractor.lower() not in country.lower()
+            for distractor in mcq["distractors"]
+        )
+        return relevance_answer and relevance_distractors
     return False
 
 

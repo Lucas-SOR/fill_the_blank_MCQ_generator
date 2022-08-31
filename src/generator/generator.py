@@ -72,7 +72,8 @@ class Generator:
             distractor_candidates_list = [
                 similar_word
                 for similar_word in most_similar_word_list
-                if keyword not in similar_word
+                if keyword.replace(".", "").lower()
+                not in similar_word.lower()  # avoid multiple abreviations like USA, U.S.A
             ]
             return sample(distractor_candidates_list, k=number_of_distractors)
         return []
