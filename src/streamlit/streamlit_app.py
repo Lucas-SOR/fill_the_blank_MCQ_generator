@@ -14,6 +14,9 @@ PATH_TO_MODEL = "s2v_models/s2v_old"
 PATH_TO_QUERY = "queries/countries_query.txt"
 TITLE = "Fundamentals of NLP with multi choice question generation"
 
+PRIMARY_APP_COLOR = "#FF0000"
+SECONDARY_APP_COLOR = "#0000FF"
+
 
 @st.cache()
 def load_data_from_sparql_query(path_to_query: str) -> pd.DataFrame:
@@ -150,13 +153,50 @@ if "mcq_generator" not in st.session_state:
 
 with st.sidebar:
     st.image(SICARA_LOGO_LINK)
-    st.title(f"[{TITLE}]({SICARA_ARTICLE_LINK})")
-    st.write("How to use this app:")
-    st.write('- to generate a MCQ click on the "Generate country MCQ" button.')
-    st.write(
-        "- an MCQ will be displayed with 4 answers, click on one to see if it was the right one!"
+    st.markdown(
+        """
+        <style>
+            .standard-text {
+                color: #001a4d;
+                display: block;
+                font-size: 14px;
+                text-align: justify;    
+                font-family: 'Outfit';
+
+            }
+        </style>
+        """,
+        unsafe_allow_html=True,
     )
-    st.write("- you can generate another MCQ by clicking on the button again.")
+    st.markdown(
+        f"""
+        <a
+        style="
+            color:#e49b59;
+            font-size:24px;
+            text-decoration: none;
+            font-family: 'Outfit';
+            font-weight: bold"
+        href={SICARA_ARTICLE_LINK}>{TITLE}
+        </a>""",
+        unsafe_allow_html=True,
+    )
+    st.markdown(
+        """
+        <hr>
+        <p class="standard-text">
+        1. To generate a MCQ click on the "Generate country MCQ" button. <hr>
+        </p>
+        <p class="standard-text">
+        2. An MCQ will be displayed with 4 answers, click on one to see if it was the right one! <hr>
+        </p>
+        <p class="standard-text">
+        3. You can generate another MCQ by clicking on the button again.
+        </p>
+        <hr>
+        """,
+        unsafe_allow_html=True,
+    )
 
 st.button("Generate country MCQ", on_click=display_question)
 
